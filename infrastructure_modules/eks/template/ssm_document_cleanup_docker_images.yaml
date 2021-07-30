@@ -1,0 +1,11 @@
+---
+schemaVersion: '2.2'
+description: Execute docker image prune weekly
+parameters: {}
+mainSteps:
+- action: aws:runShellScript
+  name: cleanupDockerImages
+  inputs:
+    runCommand:
+    - # cleanup
+    - docker image prune --all --force --filter "label=name=organization_name-api"
