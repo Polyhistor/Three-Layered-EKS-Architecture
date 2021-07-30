@@ -1,160 +1,161 @@
 # Create EKS Cluster
 
-![alt text](../imgs/eks.png "")
-
+![alt text](eks.png)
 
 Project architecture:
-```sh
+
+```sh`
 .
 ├── README.md
 ├── composition
-│   ├── eks-demo-infra # <--- Step 3: Create Composition layer and define all the required inputs to Infrastructure module's EKS main.tf
-│   │   └── ap-northeast-1
-│   │       └── prod
-│   │           ├── backend.config
-│   │           ├── data.tf
-│   │           ├── main.tf # <----- this is the entry point for EKS
-│   │           ├── outputs.tf
-│   │           ├── providers.tf
-│   │           ├── terraform.tfenvs
-│   │           └── variables.tf
-│   └── terraform-remote-backend 
-│       └── ap-northeast-1 
-│           └── prod      
-│               ├── data.tf
-│               ├── main.tf 
-│               ├── outputs.tf
-│               ├── providers.tf
-│               ├── terraform.tfstate
-│               ├── terraform.tfstate.backup
-│               ├── terraform.tfvars
-│               └── variables.tf
-├── infrastructure_modules 
-│   ├── eks # <---- Step 2: Create Infrastructure Modules for VPC and Consume Resource Modules
-│   │   ├── data.tf
-│   │   ├── main.tf
-│   │   ├── outputs.tf
-│   │   ├── template
-│   │   │   └── ssm_document_cleanup_docker_images.yaml
-│   │   └── variables.tf
-│   ├── terraform_remote_backend
-│   │   ├── data.tf
-│   │   ├── main.tf
-│   │   ├── outputs.tf
-│   │   └── variables.tf
-│   └── vpc
-│       ├── data.tf
-│       ├── main.tf
-│       ├── outputs.tf
-│       ├── provider.tf
-│       ├── variables.tf
-│       └── versions.tf
-└── resource_modules 
-    ├── compute
-    │   ├── ec2_key_pair
-    │   │   ├── main.tf
-    │   │   ├── output.tf
-    │   │   └── variables.tf
-    │   └── security_group
-    │       ├── main.tf
-    │       ├── outputs.tf
-    │       ├── rules.tf
-    │       ├── update_groups.sh
-    │       └── variables.tf
-    ├── container
-    │   ├── ecr
-    │   │   ├── main.tf
-    │   │   ├── outputs.tf
-    │   │   └── variables.tf
-    │   └── eks # <----- Step 1: Replicate remote TF modules in local Resource Modules
-    │       ├── aws_auth.tf
-    │       ├── cluster.tf
-    │       ├── data.tf
-    │       ├── irsa.tf
-    │       ├── kubectl.tf
-    │       ├── local.tf
-    │       ├── modules
-    │       │   ├── fargate
-    │       │   │   ├── data.tf
-    │       │   │   ├── fargate.tf
-    │       │   │   ├── outputs.tf
-    │       │   │   └── variables.tf
-    │       │   └── node_groups
-    │       │       ├── README.md
-    │       │       ├── locals.tf
-    │       │       ├── node_groups.tf
-    │       │       ├── outputs.tf
-    │       │       ├── ramdom.tf
-    │       │       └── variables.tf
-    │       ├── node_groups.tf
-    │       ├── outputs.tf
-    │       ├── scripts
-    │       ├── templates
-    │       │   ├── kubeconfig.tpl
-    │       │   └── userdata.sh.tpl
-    │       ├── variables.tf
-    │       ├── versions.tf
-    │       ├── workers.tf
-    │       └── workers_launch_template.tf
-    ├── database
-    │   └── dynamodb
-    │       ├── main.tf
-    │       ├── outputs.tf
-    │       └── variables.tf
-    ├── identity
-    │   └── kms_key
-    │       ├── main.tf
-    │       ├── outputs.tf
-    │       └── variables.tf 
-    ├── network
-    │   └── vpc 
-    │       ├── main.tf
-    │       ├── outputs.tf
-    │       └── variables.tf
-    └── storage
-        └── s3   
-            ├── main.tf      
-            ├── outputs.tf
-            └── variables.tf
+│ ├── eks-demo-infra # <--- Step 3: Create Composition layer and define all the required inputs to Infrastructure module's EKS main.tf
+│ │ └── ap-northeast-1
+│ │ └── prod
+│ │ ├── backend.config
+│ │ ├── data.tf
+│ │ ├── main.tf # <----- this is the entry point for EKS
+│ │ ├── outputs.tf
+│ │ ├── providers.tf
+│ │ ├── terraform.tfenvs
+│ │ └── variables.tf
+│ └── terraform-remote-backend
+│ └── ap-northeast-1
+│ └── prod
+│ ├── data.tf
+│ ├── main.tf
+│ ├── outputs.tf
+│ ├── providers.tf
+│ ├── terraform.tfstate
+│ ├── terraform.tfstate.backup
+│ ├── terraform.tfvars
+│ └── variables.tf
+├── infrastructure_modules
+│ ├── eks # <---- Step 2: Create Infrastructure Modules for VPC and Consume Resource Modules
+│ │ ├── data.tf
+│ │ ├── main.tf
+│ │ ├── outputs.tf
+│ │ ├── template
+│ │ │ └── ssm_document_cleanup_docker_images.yaml
+│ │ └── variables.tf
+│ ├── terraform_remote_backend
+│ │ ├── data.tf
+│ │ ├── main.tf
+│ │ ├── outputs.tf
+│ │ └── variables.tf
+│ └── vpc
+│ ├── data.tf
+│ ├── main.tf
+│ ├── outputs.tf
+│ ├── provider.tf
+│ ├── variables.tf
+│ └── versions.tf
+└── resource_modules
+├── compute
+│ ├── ec2_key_pair
+│ │ ├── main.tf
+│ │ ├── output.tf
+│ │ └── variables.tf
+│ └── security_group
+│ ├── main.tf
+│ ├── outputs.tf
+│ ├── rules.tf
+│ ├── update_groups.sh
+│ └── variables.tf
+├── container
+│ ├── ecr
+│ │ ├── main.tf
+│ │ ├── outputs.tf
+│ │ └── variables.tf
+│ └── eks # <----- Step 1: Replicate remote TF modules in local Resource Modules
+│ ├── aws_auth.tf
+│ ├── cluster.tf
+│ ├── data.tf
+│ ├── irsa.tf
+│ ├── kubectl.tf
+│ ├── local.tf
+│ ├── modules
+│ │ ├── fargate
+│ │ │ ├── data.tf
+│ │ │ ├── fargate.tf
+│ │ │ ├── outputs.tf
+│ │ │ └── variables.tf
+│ │ └── node_groups
+│ │ ├── README.md
+│ │ ├── locals.tf
+│ │ ├── node_groups.tf
+│ │ ├── outputs.tf
+│ │ ├── ramdom.tf
+│ │ └── variables.tf
+│ ├── node_groups.tf
+│ ├── outputs.tf
+│ ├── scripts
+│ ├── templates
+│ │ ├── kubeconfig.tpl
+│ │ └── userdata.sh.tpl
+│ ├── variables.tf
+│ ├── versions.tf
+│ ├── workers.tf
+│ └── workers_launch_template.tf
+├── database
+│ └── dynamodb
+│ ├── main.tf
+│ ├── outputs.tf
+│ └── variables.tf
+├── identity
+│ └── kms_key
+│ ├── main.tf
+│ ├── outputs.tf
+│ └── variables.tf
+├── network
+│ └── vpc
+│ ├── main.tf
+│ ├── outputs.tf
+│ └── variables.tf
+└── storage
+└── s3
+├── main.tf
+├── outputs.tf
+└── variables.tf
+
 ```
 
 # Step 1: Replicate Remote TF modules for EKS in local Resource Modules
 
 ## EKS
+
 Copy paste all the .tf and `/templates` and `/scripts` at the root of this repo https://github.com/terraform-aws-modules/terraform-aws-eks to `resource_modules/network/vpc`.
 
-
 In [resource_modules/container/eks/workers.tf](resource_modules/container/eks/workers.tf), use `substr()`
-```
-resource "aws_iam_role" "workers" {
-  name_prefix           = substr(var.workers_role_name != "" ? null : coalescelist(aws_eks_cluster.this[*].name, [""])[0], 0, 31)
+
 ```
 
+resource "aws_iam_role" "workers" {
+name_prefix = substr(var.workers_role_name != "" ? null : coalescelist(aws_eks_cluster.this[*].name, [""])[0], 0, 31)
+
+````
 
 In [resource_modules/container/eks/variables.tf](resource_modules/container/eks/variables.tf),
+
 ```sh
 # externalize this var so value can be injected at higher level (infra modules)
 variable "key_name" {
   default = ""
 }
-```
+````
 
 In [resource_modules/container/eks/local.tf](resource_modules/container/eks/local.tf),
+
 ```sh
 workers_group_defaults_defaults = {
     root_volume_type              = "gp2"
     key_name                      = var.key_name       # The key pair name that should be used for the instances in the autoscaling group
 ```
 
-
-
-
-
 # Step 2: Create Infrastructure Modules for EKS and Consume Resource Modules
 
 Using [AWS EKS Terraform Remote Module's examples](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/examples/basic/main.tf), create EKS infra module's main.tf.
 
-In [infrastructure_modules/eks/main.tf](infrastructure_modules/eks/main.tf), module `eks` will act as a __facade__ to many sub-components such as EKS cluster, EKS worker nodes, IAM roles, worker launch template, security groups, auto scaling groups, etc.
+In [infrastructure_modules/eks/main.tf](infrastructure_modules/eks/main.tf), module `eks` will act as a **facade** to many sub-components such as EKS cluster, EKS worker nodes, IAM roles, worker launch template, security groups, auto scaling groups, etc.
 
 ```sh
 module "key_pair" {
@@ -212,7 +213,6 @@ module "k8s_secret_kms_key" {
 }
 ```
 
-
 Create public and private key locally using `ssh-keygen`, then copy public key content in [infrastructure_modules/eks/data.tf](infrastructure_modules/eks/data.tf):
 
 ```sh
@@ -224,11 +224,9 @@ locals {
 
 ```
 
-
 # Step 3: Create Composition layer and define all the required inputs to Infrastructure VPC module's main.tf
 
 In [composition/eks-demo-infra/ap-northeast-1/prod/main.tf](composition/eks-demo-infra/ap-northeast-1/prod/main.tf), a single module called `vpc` is defined.
-
 
 ```sh
 ########################################
@@ -270,6 +268,7 @@ module "eks" {
 ```
 
 Also, you need to define `kubernetes` provider
+
 ```sh
 terraform {
   required_version = ">= 0.14"
@@ -297,6 +296,7 @@ provider "kubernetes" {
 ```
 
 And data
+
 ```sh
 # if you leave default value of "manage_aws_auth = true" then you need to configure the kubernetes provider as per the doc: https://github.com/terraform-aws-modules/terraform-aws-eks/blob/v12.1.0/README.md#conditional-creation, https://github.com/terraform-aws-modules/terraform-aws-eks/issues/911
 data "aws_eks_cluster" "cluster" {
@@ -309,8 +309,6 @@ data "aws_eks_cluster_auth" "cluster" {
   name  = module.eks.cluster_id
 }
 ```
-
-
 
 Finally supply input variable values in [composition/eks-demo-infra/ap-northeast-1/prod/terraform.tfvars](composition/eks-demo-infra/ap-northeast-1/prod/terraform.tfvars):
 
@@ -351,6 +349,7 @@ worker_groups = [
 ```
 
 Then run terraform commands
+
 ```sh
 cd composition/eks-demo-infra/ap-northeast-1/prod
 
@@ -376,18 +375,18 @@ module.eks.module.eks_cluster.kubernetes_config_map.aws_auth[0]: Creation comple
 Apply complete! Resources: 36 added, 0 changed, 0 destroyed.
 ```
 
-
 ## Step 4: Configure local kubeconfig to access EKS cluster
-Ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/
 
+Ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/
 
 By default, kubectl will look for kubeconfig stored in `~/.kube/config`, if not then the path found in env variable `KUBECONFIG`.
 
-
 ### Scenario 1: the default kubeconfig is empty
+
 If you don't have any other k8s cluster config stored in `~/.kube/config`, then you can overwrite it with the EKS cluster config.
 
 First output kubeconfig contents using `terraform output`:
+
 ```sh
 # show contents of kubeconfig for this EKS cluster
 terraform output eks_kubeconfig
@@ -409,10 +408,13 @@ To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 ```
 
 ### Scenario 2: the default kubeconfig is NOT empty and you will manually edit it
+
 If you already have another k8s cluster config in `~/.kube/config` and you don't want to overwrite the file, you can manually edit the file by adding the EKS cluster info.
 
 ### Scenario 3: the default kubeconfig is NOT empty and you want to keep a separate kubeconfig file
+
 Or you can pass `-kubeconfig` argument to `kubectl` command to refer to other kubeconfig file without editing `~/.kube/config` at all
+
 ```sh
 # write contents to the default kubeconfig path
 terraform output eks_kubeconfig > `~/.kube/eks-apne1-prod-terraform-eks-demo-infra`
@@ -435,8 +437,8 @@ export KUBECONFIG="${PWD}/kubeconfig_eks-apne1-prod-terraform-eks-demo-infra"
 kubectl get po
 ```
 
-
 Destroy only `eks` module
+
 ```
 terraform state list
 
